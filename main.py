@@ -2,7 +2,7 @@ import sys
 import time
 
 from tetris.game_objects_factory import GameObjectsFactory
-from tetris.game_objects import LShape, Board
+from tetris.game_objects import Board
 from tetris.render import render_in_numpy, draw_grid
 
 from blessed import Terminal
@@ -24,6 +24,9 @@ def main():
         shape = game_objects_factory.generate_random_shape()
 
         while True:
+            if any([y >= board.n for (x, y) in board.filled_board_coordinates]):
+                break
+
             while board.shape_can_continue(shape):
                 input_key = term.inkey(timeout=1)
 
@@ -31,11 +34,11 @@ def main():
                     if input_key.lower() == 'r':
                         shape.rotate()
                     elif input_key.name == "KEY_LEFT":
-                        shape.move_left()
+                        if board.shape_can_move_left(shape):
+                            shape.move_left()
                     elif input_key.name == "KEY_RIGHT":
-                        shape.move_right()
-
-                shape.make_next_step()
+                        if board.shape_can_move_right(shape):
+                            shape.move_right()
 
                 grid = render_in_numpy(board, shape)
                 draw_grid(term, grid)

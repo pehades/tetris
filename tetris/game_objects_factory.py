@@ -11,7 +11,7 @@ class GameObjectsFactory:
 
     def generate_random_shape(self) -> Shape:
 
-        y = random.randint(2, self.n - 2)
+        y = self.n - 2  # generate at the top of the screen
         x = random.randint(2, self.m - 2)
         available_shapes = [LShape(p=[x, y], n=self.n, m=self.m), SquareShape(p=[x, y], n=self.n, m=self.m)]
 

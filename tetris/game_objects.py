@@ -14,7 +14,8 @@ class Shape:
         return self.p + self.X
 
     def get_next_coordinates(self):
-        return self.coordinates + np.array([0, -1])  # move every piece one step down
+        return self.coordinates + np.array([[0, -1]])  # move every piece one step down
+
 
     def make_next_step(self):
         self.p = self.p + np.array([0, -1])
@@ -24,10 +25,16 @@ class Shape:
         if self.is_inside_board(self.p + new_X):
             self.X = new_X
 
+    def get_right_move_coordinates(self):
+        return self.coordinates + np.array([[1, 0]])
+
     def move_right(self):
         new_coordinates = self.coordinates
         if self.is_inside_board(new_coordinates + np.array([[1, 0]])):
             self.p = self.p + np.array([1, 0])
+
+    def get_left_move_coordinates(self):
+        return self.coordinates + np.array([[-1, 0]])
 
     def move_left(self):
         new_coordinates = self.coordinates
@@ -68,14 +75,34 @@ class Board:
     def shape_can_continue(self, shape: Shape) -> bool:
         next_shape_coordinates = shape.get_next_coordinates()
         for next_coordinate in next_shape_coordinates:
-            if tuple(next_coordinate) in self.filled_board_coordinates or next_coordinate[1] == 0:
+            if tuple(next_coordinate)[1] == 0:
+                shape.make_next_step()
                 self.add_shape_to_board(shape)
                 self.check_and_delete_row()
+                return False
+            if tuple(next_coordinate) in self.filled_board_coordinates:
+                self.add_shape_to_board(shape)
+                self.check_and_delete_row()
+                return False
+        shape.make_next_step()
+        return True
+
+    def shape_can_move_right(self, shape: Shape) -> bool:
+        move_right_coordinates = shape.get_right_move_coordinates()
+        for move_right_coordinate in move_right_coordinates:
+            if tuple(move_right_coordinate) in self.filled_board_coordinates:
+                return False
+        return True
+
+    def shape_can_move_left(self, shape: Shape) -> bool:
+        move_left_coordinates = shape.get_left_move_coordinates()
+        for move_left_coordinate in move_left_coordinates:
+            if tuple(move_left_coordinate) in self.filled_board_coordinates:
                 return False
         return True
 
     def add_shape_to_board(self, shape: Shape):
-        for next_coordinate in shape.get_next_coordinates():
+        for next_coordinate in shape.coordinates:
             self.filled_board_coordinates.append(tuple(next_coordinate))
 
     def check_and_delete_row(self):
@@ -87,6 +114,9 @@ class Board:
             if len(coordinates_in_specific_row) == self.m:
                 for coordinate in coordinates_in_specific_row:
                     self.filled_board_coordinates.remove(coordinate)
+                self.filled_board_coordinates = [
+                    (x, y - 1) for (x, y) in self.filled_board_coordinates if y > row_index
+                ]
 
 
 
