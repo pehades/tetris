@@ -47,6 +47,12 @@ class LShape(Shape):
         super().__init__(X=np.array([[0, -1], [-1, -1], [-1, 0], [-1, 1]]),  p=np.array(p), n=n, m=m)
 
 
+class SquareShape(Shape):
+
+    def __init__(self, p: list[float], n: int, m: int):
+        super().__init__(X=np.array([[0, -1], [-1, -1], [-1, 0], [0, 0]]),  p=np.array(p), n=n, m=m)
+
+
 class Board:
 
     def __init__(self, n: int, m: int):
@@ -62,7 +68,7 @@ class Board:
     def shape_can_continue(self, shape: Shape) -> bool:
         next_shape_coordinates = shape.get_next_coordinates()
         for next_coordinate in next_shape_coordinates:
-            if next_coordinate in self.filled_board_coordinates or next_coordinate[1] == 0:
+            if tuple(next_coordinate) in self.filled_board_coordinates or next_coordinate[1] == 0:
                 self.add_shape_to_board(shape)
                 self.check_and_delete_row()
                 return False

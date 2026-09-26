@@ -16,11 +16,11 @@ def render_in_numpy(board: Board, shape: Shape):
     # and for y we reverse the orientation ( y -> 5-y)
     for point in board.filled_board_coordinates:
         point_to_render = np.array(point)
-        rendered_board[n - point_to_render[1], point_to_render[0]] = 1
+        rendered_board[n - 1 - point_to_render[1], point_to_render[0]] = 1
 
     for coordinates in shape.coordinates:
         coordinates_to_render = np.array(coordinates)
-        rendered_board[n - coordinates_to_render[1], coordinates_to_render[0]] = 1
+        rendered_board[n - 1 - coordinates_to_render[1], coordinates_to_render[0]] = 1
 
     return rendered_board
 
