@@ -1,6 +1,7 @@
 import sys
 import time
 
+from tetris.game_objects_factory import GameObjectsFactory
 from tetris.game_objects import LShape, Board
 from tetris.render import render_in_numpy, draw_grid
 
@@ -14,27 +15,31 @@ def main():
     term = Terminal()
 
     board = Board(n, m)
-    l_shape = LShape(p=[2, 8], n=n, m=m)
+    game_objects_factory = GameObjectsFactory(n, m)
 
     with term.fullscreen(), term.hidden_cursor(), term.cbreak():
         print(term.clear(), end='')
         sys.stdout.flush()
 
-        while board.shape_can_continue(l_shape):
-            input_key = term.inkey(timeout=1)
+        shape = game_objects_factory.generate_random_shape()
 
-            if input_key:
-                if input_key.lower() == 'r':
-                    l_shape.rotate()
-                elif input_key.name == "KEY_LEFT":
-                    l_shape.move_left()
-                elif input_key.name == "KEY_RIGHT":
-                    l_shape.move_right()
+        while True:
+            while board.shape_can_continue(shape):
+                input_key = term.inkey(timeout=1)
 
-            l_shape.make_next_step()
+                if input_key:
+                    if input_key.lower() == 'r':
+                        shape.rotate()
+                    elif input_key.name == "KEY_LEFT":
+                        shape.move_left()
+                    elif input_key.name == "KEY_RIGHT":
+                        shape.move_right()
 
-            grid = render_in_numpy(board, l_shape)
-            draw_grid(term, grid)
+                shape.make_next_step()
+
+                grid = render_in_numpy(board, shape)
+                draw_grid(term, grid)
+            shape = game_objects_factory.generate_random_shape()
 
         time.sleep(5)
     sys.stdout.flush()
